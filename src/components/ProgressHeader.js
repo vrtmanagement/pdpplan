@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const steps = [
   { path: "/form/step1", label: "Step 1", title: "User Form" },
-  { path: "/form/step2", label: "Step 2", title: "DNA25 Selection" },
+  { path: "/form/step2", label: "Step 2", title: "Competencies (DNA25) Selection" },
   { path: "/form/step3", label: "Step 3", title: "Driving Forces" },
   { path: "/form/step4", label: "Step 4", title: "Behavioral Traits + PDF" },
 ];

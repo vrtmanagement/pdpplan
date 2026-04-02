@@ -138,6 +138,46 @@ function drawPageBackground(doc, imageDataUrl) {
   doc.addImage(imageDataUrl, "PNG", 0, 0, width, height);
 }
 
+function sanitizeFieldNamePart(value) {
+  return String(value || "field")
+    .replace(/[^a-zA-Z0-9_]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 48) || "field";
+}
+
+function addEditableTextField(doc, config) {
+  const {
+    name,
+    x,
+    y,
+    width,
+    height,
+    multiline = false,
+    fontSize = 10,
+    textAlign = "left",
+  } = config;
+  try {
+    const field = new doc.AcroForm.TextField();
+    field.fieldName = name;
+    field.x = x;
+    field.y = y;
+    field.width = width;
+    field.height = height;
+    field.fontSize = fontSize;
+    field.multiline = multiline;
+    field.doNotScroll = false;
+    field.doNotSpellCheck = false;
+    field.textAlign = textAlign;
+    field.defaultValue = "";
+    field.value = "";
+    field.required = false;
+    doc.addField(field);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function drawIntroPage(doc, reportState) {
   const { user } = reportState;
   const width = doc.internal.pageSize.getWidth();
@@ -305,6 +345,8 @@ function drawElementWorkbook(doc, item, explanation, middlePageDataUrl) {
   const right = 24;
   const bottom = 24;
   let y = 44 + MIDDLE_PAGE_TOP_OFFSET;
+  const fieldPrefix = sanitizeFieldNamePart(item);
+  let fieldCount = 1;
 
   const ensureSpace = (required) => {
     if (y + required <= pageHeight - bottom) {
@@ -314,6 +356,9 @@ function drawElementWorkbook(doc, item, explanation, middlePageDataUrl) {
     drawPageBackground(doc, middlePageDataUrl);
     y = 44 + MIDDLE_PAGE_TOP_OFFSET;
   };
+
+  const nextFieldName = (suffix) =>
+    `${fieldPrefix}_${suffix}_${doc.getCurrentPageInfo().pageNumber}_${fieldCount++}`;
 
   const drawTextBlock = (text, width, lineHeight = 5, x = left) => {
     const lines = doc.splitTextToSize(text, width);
@@ -579,6 +624,50 @@ function drawElementWorkbook(doc, item, explanation, middlePageDataUrl) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
       doc.text(`${drawnRows + i + 1}.`, tableX + 3, rowTop + rowHeight / 2 + 1.3);
+
+      const activityX = tableX + 8;
+      const activityY = rowTop + 1.1;
+      const activityWidth = colWidths[0] - 9.6;
+      const dateY = rowTop + 1.1;
+      const dateHeight = rowHeight - 2.2;
+      const notesX = tableX + colWidths[0] + colWidths[1] + colWidths[2] + 1.2;
+      const notesWidth = colWidths[3] - 2.4;
+      addEditableTextField(doc, {
+        name: nextFieldName("activity"),
+        x: activityX,
+        y: activityY,
+        width: activityWidth,
+        height: dateHeight,
+        multiline: true,
+        fontSize: 9,
+      });
+      addEditableTextField(doc, {
+        name: nextFieldName("start_date"),
+        x: tableX + colWidths[0] + 1.2,
+        y: dateY,
+        width: colWidths[1] - 2.4,
+        height: dateHeight,
+        multiline: false,
+        fontSize: 9,
+      });
+      addEditableTextField(doc, {
+        name: nextFieldName("end_date"),
+        x: tableX + colWidths[0] + colWidths[1] + 1.2,
+        y: dateY,
+        width: colWidths[2] - 2.4,
+        height: dateHeight,
+        multiline: false,
+        fontSize: 9,
+      });
+      addEditableTextField(doc, {
+        name: nextFieldName("result_notes"),
+        x: notesX,
+        y: dateY,
+        width: notesWidth,
+        height: dateHeight,
+        multiline: true,
+        fontSize: 9,
+      });
     }
 
     y = top + fullHeight + 6;
@@ -612,6 +701,15 @@ function drawElementWorkbook(doc, item, explanation, middlePageDataUrl) {
     ensureSpace(boxHeight + 10);
     doc.setDrawColor(120, 120, 120);
     doc.rect(18, y, pageWidth - 36, boxHeight);
+    addEditableTextField(doc, {
+      name: nextFieldName(`reflection_${index + 1}`),
+      x: 19.2,
+      y: y + 1.2,
+      width: pageWidth - 38.4,
+      height: boxHeight - 2.4,
+      multiline: true,
+      fontSize: 10,
+    });
     y += boxHeight + 10;
   });
 
@@ -625,6 +723,24 @@ function drawElementWorkbook(doc, item, explanation, middlePageDataUrl) {
   doc.setFontSize(12);
   doc.text("PDP Leader Signature", left, y);
   doc.text("Date", pageWidth - right - 25, y);
+  addEditableTextField(doc, {
+    name: nextFieldName("leader_signature"),
+    x: left,
+    y: y - 10.5,
+    width: 55,
+    height: 6.8,
+    multiline: false,
+    fontSize: 10,
+  });
+  addEditableTextField(doc, {
+    name: nextFieldName("leader_date"),
+    x: pageWidth - right - 30,
+    y: y - 10.5,
+    width: 30,
+    height: 6.8,
+    multiline: false,
+    fontSize: 10,
+  });
 
   ensureSpace(30);
   y += 10;
@@ -633,6 +749,24 @@ function drawElementWorkbook(doc, item, explanation, middlePageDataUrl) {
   y += 6;
   doc.text("Accountability partner signature", left, y);
   doc.text("Date", pageWidth - right - 25, y);
+  addEditableTextField(doc, {
+    name: nextFieldName("accountability_signature"),
+    x: left,
+    y: y - 10.5,
+    width: 55,
+    height: 6.8,
+    multiline: false,
+    fontSize: 10,
+  });
+  addEditableTextField(doc, {
+    name: nextFieldName("accountability_date"),
+    x: pageWidth - right - 30,
+    y: y - 10.5,
+    width: 30,
+    height: 6.8,
+    multiline: false,
+    fontSize: 10,
+  });
 }
 
 function drawItemExplanationsPages(doc, reportState, middlePageDataUrl) {
@@ -674,11 +808,11 @@ function drawThankYouPage(doc) {
 
   doc.setTextColor(...RED_600);
   doc.setFont("times", "bold");
-  doc.setFontSize(30);
-  doc.text("Thank You", width / 2, height / 2 - 4, { align: "center" });
-  doc.setFont("times", "italic");
-  doc.setFontSize(13);
-  doc.text("For your commitment to growth.", width / 2, height / 2 + 8, {
+  doc.setFontSize(76);
+  doc.text("Thank You", width / 2, height / 2 - 10, { align: "center" });
+  doc.setFont("times", "bolditalic");
+  doc.setFontSize(38);
+  doc.text("For your commitment to growth.", width / 2, height / 2 + 10, {
     align: "center",
   });
   doc.setTextColor(0, 0, 0);

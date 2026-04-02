@@ -10,7 +10,7 @@ export function createInitialFormState() {
     drivingForces: [],
     behavioralTraits: [],
     sectionTitles: {
-      dna25: "DNA25",
+      dna25: "Competencies (DNA25)",
       drivingForces: "Driving Forces",
       behavioralTraits: "Behaviour",
     },

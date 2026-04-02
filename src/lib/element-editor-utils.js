@@ -1,7 +1,7 @@
 export const ELEMENT_GROUP_META = [
   {
     key: "dna25",
-    label: "DNA25",
+    label: "Competencies (DNA25)",
     blurb: "Competency dimensions",
     chipClass: "bg-rose-100 text-rose-800 ring-rose-200/60",
     accentClass: "from-rose-500/15 to-amber-500/10",

@@ -19,7 +19,7 @@ export default function Step1Page() {
   return (
     <StepLayout
       title="Step 1: Respondent Information"
-      subtitle={`Enter basic respondent details. Sections: ${formState.sectionTitles.dna25}, ${formState.sectionTitles.behavioralTraits}, ${formState.sectionTitles.drivingForces}.`}
+      subtitle={`Enter basic respondent details. Sections: ${formState.sectionTitles.dna25}, ${formState.sectionTitles.behavioralTraits} and ${formState.sectionTitles.drivingForces}.`}
     >
       <form className="grid gap-4 sm:max-w-xl" autoComplete="off">
         <label className="grid gap-1">

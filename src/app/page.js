@@ -29,7 +29,7 @@ export default async function Home() {
               PDP Assessment Builder
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-600">
-              Build a complete respondent report using DNA25, Driving Forces, and
+              Build a complete respondent report using Competencies (DNA25), Driving Forces, and
               Behavioral Traits with secured database storage and premium workbook
               editing.
             </p>
