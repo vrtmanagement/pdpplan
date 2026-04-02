@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createInitialFormState, normalizeFormState } from "@/lib/form-state";
 
 const initialState = createInitialFormState();
@@ -17,7 +17,7 @@ const FormContext = createContext({
   saveElementExplanation: async () => {},
   addElement: async () => {},
   deleteElement: async () => {},
-  resetForm: () => {},
+  resetForm: async () => {},
 });
 
 function remapSelections(oldItems, newItems, selectedItems) {
@@ -45,6 +45,7 @@ export function FormProvider({ children }) {
   const [formState, setFormState] = useState(initialState);
   const [hydrated, setHydrated] = useState(false);
   const [persistError, setPersistError] = useState("");
+  const skipNextPersistRef = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -66,6 +67,10 @@ export function FormProvider({ children }) {
 
   useEffect(() => {
     if (!hydrated) {
+      return;
+    }
+    if (skipNextPersistRef.current) {
+      skipNextPersistRef.current = false;
       return;
     }
     const timeout = window.setTimeout(async () => {
@@ -233,7 +238,24 @@ export function FormProvider({ children }) {
         const payload = await response.json();
         setFormState(normalizeFormState(payload.state || {}));
       },
-      resetForm: () => setFormState(initialState),
+      resetForm: async () => {
+        // Prevent a stale debounced save from writing old step data after reset.
+        skipNextPersistRef.current = true;
+        setFormState(initialState);
+        try {
+          const response = await fetch("/api/state", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ state: initialState }),
+          });
+          if (!response.ok) {
+            throw new Error("reset-save-failed");
+          }
+          setPersistError("");
+        } catch {
+          setPersistError("Unable to save changes to database");
+        }
+      },
     }),
     [formState, hydrated, persistError]
   );

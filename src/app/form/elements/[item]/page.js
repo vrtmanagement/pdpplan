@@ -43,6 +43,7 @@ export default function ElementDetailPage() {
   const [justSaved, setJustSaved] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [toasts, setToasts] = useState([]);
 
   const pushToast = (type, message) => {
@@ -127,12 +128,15 @@ export default function ElementDetailPage() {
       return;
     }
     try {
+      setSaving(true);
       await saveElementExplanation(item, draftToSavedExplanation(draft, resolved));
       setIsEditing(false);
       setJustSaved(true);
       pushToast("success", "Element saved successfully");
     } catch {
       pushToast("error", "Failed to save element");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -211,10 +215,18 @@ export default function ElementDetailPage() {
                   <div className="flex flex-col gap-2 sm:flex-row-reverse">
                     <button
                       type="button"
+                      disabled={saving}
                       onClick={save}
-                      className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-500"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-500 disabled:bg-zinc-300"
                     >
-                      Save changes
+                      {saving ? (
+                        <>
+                          <span className="btn-spinner" aria-hidden="true" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save changes"
+                      )}
                     </button>
                     <button
                       type="button"
@@ -444,13 +456,20 @@ export default function ElementDetailPage() {
                     setDeleting(false);
                   }
                 }}
-                className={`rounded-lg px-4 py-2 text-sm font-medium text-white ${
+                className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white ${
                   deleting
                     ? "cursor-not-allowed bg-zinc-300"
                     : "bg-red-600 hover:bg-red-500"
                 }`}
               >
-                Yes
+                {deleting ? (
+                  <>
+                    <span className="btn-spinner" aria-hidden="true" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Yes"
+                )}
               </button>
             </div>
           </div>

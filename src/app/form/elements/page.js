@@ -154,9 +154,16 @@ export default function ElementsIndexPage() {
                             }
                           }}
                           disabled={addingKey === section.key}
-                          className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-zinc-300"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
-                          {addingKey === section.key ? "Adding..." : "Add"}
+                          {addingKey === section.key ? (
+                            <>
+                              <span className="btn-spinner" aria-hidden="true" />
+                              Adding...
+                            </>
+                          ) : (
+                            "Add"
+                          )}
                         </button>
                       </div>
                     </div>

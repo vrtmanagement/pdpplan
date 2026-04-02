@@ -69,13 +69,20 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`rounded-lg px-4 py-2 text-sm font-medium text-white ${
+            className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white ${
               loading
                 ? "cursor-not-allowed bg-zinc-300"
                 : "bg-indigo-600 hover:bg-indigo-500"
             }`}
           >
-            {loading ? "Signing in..." : "Login"}
+            {loading ? (
+              <>
+                <span className="btn-spinner" aria-hidden="true" />
+                Signing in...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
       </main>

@@ -40,10 +40,46 @@ function buildSeedState() {
   });
 }
 
+function preferNonEmpty(currentValue, fallbackValue) {
+  if (Array.isArray(currentValue)) {
+    return currentValue.length ? currentValue : fallbackValue;
+  }
+  if (typeof currentValue === "string") {
+    return currentValue.trim() ? currentValue : fallbackValue;
+  }
+  if (currentValue && typeof currentValue === "object") {
+    return Object.keys(currentValue).length ? currentValue : fallbackValue;
+  }
+  return currentValue ?? fallbackValue;
+}
+
+function mergeExplanation(seedEntry = {}, currentEntry = {}) {
+  return {
+    ...seedEntry,
+    ...currentEntry,
+    definition: preferNonEmpty(currentEntry.definition, seedEntry.definition || ""),
+    instruction: preferNonEmpty(currentEntry.instruction, seedEntry.instruction || ""),
+    effortLevels: preferNonEmpty(currentEntry.effortLevels, seedEntry.effortLevels || []),
+    behavioralIndicators: preferNonEmpty(
+      currentEntry.behavioralIndicators,
+      seedEntry.behavioralIndicators || []
+    ),
+    developmentStrategies: preferNonEmpty(
+      currentEntry.developmentStrategies,
+      seedEntry.developmentStrategies || []
+    ),
+    reflectionQuestions: preferNonEmpty(
+      currentEntry.reflectionQuestions,
+      seedEntry.reflectionQuestions || []
+    ),
+  };
+}
+
 export async function readState() {
   const db = await getDb();
   const doc = await db.collection(COLLECTION).findOne({ _id: DOC_ID });
   const normalized = normalizeFormState(doc?.state || {});
+  const seeded = buildSeedState();
   const isEmpty =
     !normalized.elementItems.dna25.length &&
     !normalized.elementItems.drivingForces.length &&
@@ -51,7 +87,6 @@ export async function readState() {
   const missingExplanations = !Object.keys(normalized.itemExplanations || {}).length;
 
   if (!doc || isEmpty || missingExplanations) {
-    const seeded = buildSeedState();
     await db.collection(COLLECTION).updateOne(
       { _id: DOC_ID },
       { $set: { state: seeded, updatedAt: new Date() } },
@@ -59,8 +94,43 @@ export async function readState() {
     );
     return seeded;
   }
+  const legacyPeopleOriented = normalized.itemExplanations?.["People-Oriented"] || {};
+  const mergedExplanations = { ...normalized.itemExplanations };
+  Object.keys(seeded.itemExplanations || {}).forEach((item) => {
+    const current =
+      item === "People Oriented"
+        ? {
+            ...legacyPeopleOriented,
+            ...(normalized.itemExplanations?.[item] || {}),
+          }
+        : normalized.itemExplanations?.[item] || {};
+    mergedExplanations[item] = mergeExplanation(
+      seeded.itemExplanations[item] || {},
+      current
+    );
+  });
+  delete mergedExplanations["People-Oriented"];
 
-  return normalized;
+  const mergedDescriptions = {
+    ...normalized.itemDescriptions,
+  };
+  Object.keys(seeded.itemDescriptions || {}).forEach((item) => {
+    if (!mergedDescriptions[item]?.trim()) {
+      mergedDescriptions[item] = seeded.itemDescriptions[item];
+    }
+  });
+
+  const mergedState = normalizeFormState({
+    ...normalized,
+    itemDescriptions: mergedDescriptions,
+    itemExplanations: mergedExplanations,
+  });
+  await db.collection(COLLECTION).updateOne(
+    { _id: DOC_ID },
+    { $set: { state: mergedState, updatedAt: new Date() } },
+    { upsert: true }
+  );
+  return mergedState;
 }
 
 export async function writeState(nextState) {

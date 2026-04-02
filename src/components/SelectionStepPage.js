@@ -114,6 +114,7 @@ export default function SelectionStepPage({
   const router = useRouter();
   const [activeId, setActiveId] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const [navAction, setNavAction] = useState("");
   const { formState, addSelection, removeSelection, reorderSelection } =
     useFormState();
   const selectedItems = formState[stateKey];
@@ -271,17 +272,39 @@ export default function SelectionStepPage({
       <div className="mt-6 flex items-center justify-between">
         <button
           type="button"
-          onClick={() => router.push(backHref)}
-          className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+          disabled={navAction === "next" || navAction === "back"}
+          onClick={() => {
+            setNavAction("back");
+            router.push(backHref);
+          }}
+          className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 disabled:bg-zinc-100"
         >
-          Back
+          {navAction === "back" ? (
+            <>
+              <span className="btn-spinner" aria-hidden="true" />
+              Loading...
+            </>
+          ) : (
+            "Back"
+          )}
         </button>
         <button
           type="button"
-          onClick={() => router.push(nextHref)}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+          disabled={navAction === "next" || navAction === "back"}
+          onClick={() => {
+            setNavAction("next");
+            router.push(nextHref);
+          }}
+          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:bg-zinc-300"
         >
-          {nextButtonLabel}
+          {navAction === "next" ? (
+            <>
+              <span className="btn-spinner" aria-hidden="true" />
+              Loading...
+            </>
+          ) : (
+            nextButtonLabel
+          )}
         </button>
       </div>
     </StepLayout>

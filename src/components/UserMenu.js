@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function UserMenu({ username = "User" }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -19,9 +20,14 @@ export default function UserMenu({ username = "User" }) {
   }, []);
 
   const onLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
-    router.refresh();
+    try {
+      setLoggingOut(true);
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   return (
@@ -40,10 +46,18 @@ export default function UserMenu({ username = "User" }) {
         <div className="absolute right-0 z-20 mt-2 w-40 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg">
           <button
             type="button"
+            disabled={loggingOut}
             onClick={onLogout}
-            className="w-full rounded-lg px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-100"
+            className="inline-flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-100 disabled:bg-zinc-100"
           >
-            Logout
+            {loggingOut ? (
+              <>
+                <span className="btn-spinner" aria-hidden="true" />
+                Logging out...
+              </>
+            ) : (
+              "Logout"
+            )}
           </button>
         </div>
       ) : null}

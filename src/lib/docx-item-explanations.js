@@ -182,7 +182,19 @@ export const DOCX_ITEM_EXPLANATIONS = {
         "detail": "This Behavior is not related to your current job but could be useful for personal or professional development in other areas. You can work on it when you want."
       }
     ],
-    "behavioralIndicators": [],
+    "behavioralIndicators": [
+      "Readily adapts behavior across changing situations while staying effective and composed.",
+      "Shifts communication style quickly based on context, audience, and desired outcomes.",
+      "Transitions smoothly between tasks, priorities, or roles without losing momentum.",
+      "Learns new tools, systems, or methods quickly and applies them with confidence.",
+      "Balances structure and flexibility, using plans as guides rather than rigid rules.",
+      "Remains productive in ambiguity and uncertainty while maintaining clear progress.",
+      "Integrates feedback rapidly and adjusts approach without defensiveness.",
+      "Works effectively with diverse personalities, functions, and operating styles.",
+      "Responds constructively to unexpected changes instead of resisting or delaying.",
+      "Combines analytical and creative thinking to solve problems in varied contexts.",
+      "Maintains resilience and clarity when demands, expectations, or environments shift."
+    ],
     "developmentStrategies": [
       "Practice Situational Awareness Daily: Develop the habit of observing and understanding new environments, dynamics, and cues. Pause, assess the situation, and identify what\u2019s needed before responding or taking action.",
       "Build Mental Flexibility Through Scenario Planning: Regularly engage in \u201cwhat-if\u201d exercises to simulate different responses to unexpected events. This trains your brain to pivot quickly and think through alternatives under pressure.",
@@ -581,7 +593,7 @@ export const DOCX_ITEM_EXPLANATIONS = {
     ],
     "sourceFile": "TTIB8 - Organized Workplace - Behavior.docx"
   },
-  "People-Oriented": {
+  "People Oriented": {
     "definition": "The ability to build genuine rapport, foster trust, and engage with individuals across a wide range of backgrounds, roles, and personalities. Individuals who demonstrate this behavior create emotionally safe environments, tailor their communication to others\u2019 needs, and navigate social nuances with empathy and respect. Strengthening this behavior enables deeper collaboration, improves interpersonal dynamics, and supports a culture of inclusion and mutual understanding, key qualities for leadership, team effectiveness, and long-term career growth.",
     "instruction": "Review the definition of People-Oriented behavior and reflect on its relevance to both your current role and your long-term career goals. Based on the current demands of your role and the expectations of your future position, select one of the four effort levels, Critical, Important, Future Priority, or Personal Growth, that best reflects how urgently you need to develop this Behavior. Document your choice, explain why this level best matches your situation, and list at least three development activities that you will begin implementing immediately to close the gap between today\u2019s performance and the standard required for your next career step.",
     "effortLevels": [
@@ -764,7 +776,19 @@ export const DOCX_ITEM_EXPLANATIONS = {
         "detail": "This Competency is not related to your current job but could be useful for personal or professional development in other areas. You can work on it when you want."
       }
     ],
-    "behavioralIndicators": [],
+    "behavioralIndicators": [
+      "Anticipates future opportunities, risks, and disruptions before they become urgent.",
+      "Connects current decisions to long-term impact on team, business, and stakeholders.",
+      "Uses trend signals, data, and patterns to shape strategic direction proactively.",
+      "Creates clear future scenarios and prepares practical response options for each.",
+      "Challenges short-term thinking when it conflicts with long-term value creation.",
+      "Translates vision into milestones, priorities, and measurable outcomes.",
+      "Encourages others to think beyond immediate constraints and imagine possibilities.",
+      "Spots emerging technologies or market shifts and evaluates relevance early.",
+      "Balances bold vision with execution discipline and realistic resource planning.",
+      "Continuously revisits assumptions as new information appears and updates plans.",
+      "Communicates future-oriented ideas in a way that builds alignment and commitment."
+    ],
     "developmentStrategies": [
       "Practice Environmental Scanning Weekly: Dedicate time each week to review trend reports, technology news, industry forecasts, and cross-sector innovations. Summarize key insights and project their long-term impact on your role or business.",
       "Develop Scenario Planning Skills: Learn to create multiple future scenarios (best-case, worst-case, disruptive, and visionary). Practice using these scenarios to inform strategy, investment decisions, or personal goals.",
@@ -1401,7 +1425,19 @@ export const DOCX_ITEM_EXPLANATIONS = {
         "detail": "This Competency is not related to your current job but could be useful for personal or professional development in other areas. You can work on it when you want."
       }
     ],
-    "behavioralIndicators": [],
+    "behavioralIndicators": [
+      "Begins important work without waiting for reminders, prompts, or close supervision.",
+      "Identifies what needs to be done and proactively takes the first step.",
+      "Creates momentum by breaking complex goals into clear, actionable next actions.",
+      "Acts decisively even when information is incomplete, then adjusts as needed.",
+      "Takes ownership of obstacles and looks for solutions before escalating issues.",
+      "Maintains progress during uncertainty by focusing on controllable actions.",
+      "Demonstrates personal accountability for commitments, deadlines, and outcomes.",
+      "Recovers quickly from setbacks and restarts with purpose and energy.",
+      "Prioritizes high-impact tasks and initiates them early in the day.",
+      "Uses self-set checkpoints to track execution and sustain consistency.",
+      "Shows confidence in independent action while still seeking input when appropriate."
+    ],
     "developmentStrategies": [
       "Take Initiative Immediately: Start tasks without waiting for instructions. Identify what needs to be done and take action before being told.",
       "Break Work into Small Steps: Divide big tasks into smaller, easier steps to avoid feeling overwhelmed. Use the 5-minute rule to start quickly.",
@@ -1716,7 +1752,19 @@ export const DOCX_ITEM_EXPLANATIONS = {
         "detail": "This Competency is not related to your current job but could be useful for personal or professional development in other areas. You can work on it when you want."
       }
     ],
-    "behavioralIndicators": [],
+    "behavioralIndicators": [
+      "Questions assumptions and reframes problems to uncover new opportunities.",
+      "Generates multiple solution options before selecting an approach.",
+      "Combines ideas from different domains to produce practical innovations.",
+      "Tests concepts early through prototypes or pilots and learns from outcomes.",
+      "Welcomes constructive dissent and uses it to strengthen ideas.",
+      "Balances originality with feasibility, resources, and stakeholder needs.",
+      "Stays curious about trends, tools, and methods outside immediate expertise.",
+      "Takes calculated risks to move promising ideas from concept to execution.",
+      "Encourages experimentation and psychological safety in team ideation.",
+      "Improves existing processes continuously, not only through big breakthroughs.",
+      "Converts insights into clear actions, timelines, and measurable impact."
+    ],
     "developmentStrategies": [
       "Practice Critical Thinking Regularly: Challenge existing ideas, methods, and solutions by asking \"why\" and \"what if\" questions to uncover new perspectives and areas for improvement.",
       "Embrace Problem-Solving Techniques: Utilize creative problem-solving methods, such as brainstorming, mind mapping, and the \"5 Whys\" technique, to explore multiple solutions for complex problems.",
@@ -1958,7 +2006,7 @@ export const DOCX_ITEM_EXPLANATIONS = {
   },
   "Altruistic": {
     "definition": "The intrinsic motivation to help others for the fulfillment it brings, rather than for recognition or personal gain. People who operate from this drive are deeply compelled to make a meaningful difference, especially in the lives of those who are vulnerable or in need. They are drawn to roles that demand compassion, empathy, and service, often acting as emotional anchors for those around them. Developing this driving force with intention can help amplify your positive impact, improve relational trust, and align your sense of purpose with professional effectiveness while also building resilience through healthy boundaries and sustainable giving.",
-    "instruction": "",
+    "instruction": "Review the definition of the Altruistic driving force and evaluate its relevance to your current responsibilities and future aspirations. Based on your role demands and longer-term goals, select one effort level (Critical, Important, Future Priority, or Personal Growth), explain your choice, and commit to at least three development activities you will begin now to strengthen impact while maintaining healthy boundaries.",
     "effortLevels": [
       {
         "level": "Critical (Must-Have Right Now)",
@@ -2571,7 +2619,19 @@ export const DOCX_ITEM_EXPLANATIONS = {
         "detail": "This Driving force is not related to your current job but could be useful for personal or professional development in other areas. You can work on it when you want."
       }
     ],
-    "behavioralIndicators": [],
+    "behavioralIndicators": [
+      "Welcomes unconventional ideas and explores alternatives before settling on one path.",
+      "Shows curiosity toward diverse viewpoints, even when they challenge existing beliefs.",
+      "Adapts quickly when new information suggests a better approach.",
+      "Experiments with unfamiliar methods, tools, or frameworks to improve outcomes.",
+      "Questions legacy assumptions and seeks evidence for current ways of working.",
+      "Listens to feedback with openness and uses it to refine thinking.",
+      "Engages with people from different backgrounds to broaden perspective.",
+      "Maintains flexibility in planning while preserving clarity of purpose.",
+      "Encourages innovation by creating space for exploration and constructive debate.",
+      "Learns continuously from successes, failures, and emerging trends.",
+      "Translates new ideas into practical tests and incremental improvements."
+    ],
     "developmentStrategies": [
       "Adopt a Continuous Learning Mindset: Regularly engage in learning across disciplines (e.g., design thinking, systems thinking, emerging technologies) to fuel your idea reservoir and keep the mind open to novel solutions.",
       "Deliberately Disrupt Your Routine: Break habitual work patterns by experimenting with new approaches weekly. This trains your mind to get comfortable with change and flexibility.",

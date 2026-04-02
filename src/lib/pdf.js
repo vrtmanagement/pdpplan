@@ -1,12 +1,15 @@
 import { jsPDF } from "jspdf";
 
 const BRAND_RED = [208, 96, 104];
-const LINK_BLUE = [44, 107, 176];
-const FOOTER_COPY_PARTS = {
-  prefix: "©2026 - Entrepreneur Growth Alliance",
-  middle: " (EGA",
-  suffix: ") by VRT Management Group, LLC",
-};
+const LINK_BLUE = [120, 173, 232];
+const RED_600 = [220, 38, 38];
+const PURPLE_600 = [147, 51, 234];
+const COMPETENCY_PURPLE = [75, 40, 130];
+const FOOTER_CONTACT =
+  "Phone: 203 304 1918   Email: coachrajesh@vrt9.com   Web: https://www.vrt9.net";
+const FOOTER_COPYRIGHT =
+  "©2026 - Entrepreneur Growth Alliance© (EGA©) by VRT Management Group, LLC";
+const MIDDLE_PAGE_TOP_OFFSET = 12;
 
 function formatReadableDate(dateInput) {
   const fallback = new Date();
@@ -42,143 +45,35 @@ async function toBlobDataUrl(blob) {
   });
 }
 
-function drawFooterContactRow(doc, width, height) {
-  const y = height - 8.2;
-  doc.setFontSize(9);
-  const rightReservedForPageBadge = 33;
-  const leftMargin = 15;
-  const itemGap = 8;
-  const labelValueGap = 0.7;
-
-  const segments = [
-    { label: "Phone:", value: "203 304 1918", valueColor: BRAND_RED },
-    { label: "Email:", value: "coachrajesh@vrt9.com", valueColor: LINK_BLUE },
-    { label: "Web:", value: "https://www.vrt9.net", valueColor: LINK_BLUE },
-  ];
-
-  const measuredSegments = segments.map((segment) => {
-    doc.setFont("times", "bold");
-    const labelWidth = doc.getTextWidth(segment.label);
-    doc.setFont("times", "normal");
-    const valueWidth = doc.getTextWidth(segment.value);
-    return {
-      ...segment,
-      labelWidth,
-      valueWidth,
-      totalWidth: labelWidth + labelValueGap + valueWidth,
-    };
-  });
-
-  const totalContentWidth =
-    measuredSegments.reduce((sum, segment) => sum + segment.totalWidth, 0) +
-    itemGap * (measuredSegments.length - 1);
-
-  const minX = leftMargin;
-  const maxX = width - rightReservedForPageBadge - totalContentWidth;
-  let x = (width - totalContentWidth) / 2;
-  x = Math.max(minX, Math.min(x, maxX));
-
-  measuredSegments.forEach((segment, index) => {
-    doc.setFont("times", "bold");
-    doc.setTextColor(...BRAND_RED);
-    doc.text(segment.label, x, y);
-    x += segment.labelWidth + labelValueGap;
-
-    doc.setFont("times", "normal");
-    doc.setTextColor(...segment.valueColor);
-    doc.text(segment.value, x, y);
-    x += segment.valueWidth;
-
-    if (index < measuredSegments.length - 1) {
-      x += itemGap;
-    }
-  });
-}
-
-function drawTopHeaderFade(doc, width) {
-  const barHeight = 2.2;
-  const steps = 36;
-  const lightTone = [235, 185, 191];
-
-  for (let i = 0; i < steps; i += 1) {
-    const t = i / (steps - 1);
-    const r = Math.round(lightTone[0] + (BRAND_RED[0] - lightTone[0]) * t);
-    const g = Math.round(lightTone[1] + (BRAND_RED[1] - lightTone[1]) * t);
-    const b = Math.round(lightTone[2] + (BRAND_RED[2] - lightTone[2]) * t);
-    const x = (width / steps) * i;
-
-    doc.setFillColor(r, g, b);
-    doc.rect(x, 0, width / steps + 0.2, barHeight, "F");
-  }
-}
-
-function drawFooterCopyright(doc, width, height) {
-  const y = height - 4.5;
-  const superScriptYOffset = 1.25;
-  const normalSize = 8.8;
-  const superscriptSize = 6.5;
-
-  doc.setFont("times", "bold");
-  doc.setFontSize(normalSize);
-  const prefixWidth = doc.getTextWidth(FOOTER_COPY_PARTS.prefix);
-  const middleWidth = doc.getTextWidth(FOOTER_COPY_PARTS.middle);
-  const suffixWidth = doc.getTextWidth(FOOTER_COPY_PARTS.suffix);
-
-  doc.setFontSize(superscriptSize);
-  const copyrightWidth = doc.getTextWidth("©");
-
-  const totalWidth =
-    prefixWidth + copyrightWidth + middleWidth + copyrightWidth + suffixWidth;
-  let x = (width - totalWidth) / 2;
-
-  doc.setFontSize(normalSize);
-  doc.text(FOOTER_COPY_PARTS.prefix, x, y);
-  x += prefixWidth;
-
-  doc.setFontSize(superscriptSize);
-  doc.text("©", x, y - superScriptYOffset);
-  x += copyrightWidth;
-
-  doc.setFontSize(normalSize);
-  doc.text(FOOTER_COPY_PARTS.middle, x, y);
-  x += middleWidth;
-
-  doc.setFontSize(superscriptSize);
-  doc.text("©", x, y - superScriptYOffset);
-  x += copyrightWidth;
-
-  doc.setFontSize(normalSize);
-  doc.text(FOOTER_COPY_PARTS.suffix, x, y);
-}
-
-function drawHeaderAndFooter(doc, pageNumber, totalPages, logoDataUrl) {
+function drawMiddlePageFooter(doc, pageNumber, totalPages) {
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();
+  const footerLeft = 30;
+  const footerTopY = height - 8.4;
 
-  drawTopHeaderFade(doc, width);
+  // Keep footer content slightly lower and page number shifted left
+  // to align with the bottom-right red area in middle background image.
+  doc.setFont("times", "normal");
+  doc.setFontSize(8.8);
+  doc.setTextColor(...BRAND_RED);
+  doc.text("Phone: 203 304 1918   Email: ", footerLeft, footerTopY);
+  const phonePrefixWidth = doc.getTextWidth("Phone: 203 304 1918   Email: ");
+  doc.setTextColor(...LINK_BLUE);
+  doc.text("coachrajesh@vrt9.com", footerLeft + phonePrefixWidth, footerTopY);
+  const emailWidth = doc.getTextWidth("coachrajesh@vrt9.com");
+  doc.setTextColor(...BRAND_RED);
+  doc.text("   Web: ", footerLeft + phonePrefixWidth + emailWidth, footerTopY);
+  const webPrefixWidth = doc.getTextWidth("Phone: 203 304 1918   Email: coachrajesh@vrt9.com   Web: ");
+  doc.setTextColor(...LINK_BLUE);
+  doc.text("https://www.vrt9.net", footerLeft + webPrefixWidth, footerTopY);
 
-  if (logoDataUrl) {
-    doc.addImage(logoDataUrl, "PNG", 18, 9, 34, 19);
-  } else {
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...BRAND_RED);
-    doc.setFontSize(16);
-    doc.text("VRT", 16, 20);
-    doc.setFontSize(9);
-    doc.text("Management Group", 16, 25);
-  }
-
-  drawFooterContactRow(doc, width, height);
+  doc.setTextColor(...BRAND_RED);
+  doc.text(FOOTER_COPYRIGHT, footerLeft, height - 4.9);
 
   doc.setFont("times", "bold");
-  doc.setTextColor(...BRAND_RED);
-  drawFooterCopyright(doc, width, height);
-
-  doc.setFillColor(...BRAND_RED);
-  doc.rect(width - 31, height - 14.4, 31, 9.5, "F");
-  doc.setTextColor(255, 255, 255);
   doc.setFontSize(10.5);
-  doc.text(`${pageNumber} of ${totalPages}`, width - 15.5, height - 8.1, {
+  doc.setTextColor(255, 255, 255);
+  doc.text(`${pageNumber} of ${totalPages}`, width - 19.2, height - 2.2, {
     align: "center",
   });
   doc.setTextColor(0, 0, 0);
@@ -201,7 +96,7 @@ function drawCoverPage(doc, reportState, growthJourneyDataUrl) {
   doc.setTextColor(0, 0, 0);
   doc.setFont("times", "italic");
   doc.setFontSize(11);
-  doc.text("-Your Blueprint to Leadership and Business Growth", width / 2, 69, {
+  doc.text("-Your Roadmap to Leadership and Business Growth", width / 2, 69, {
     align: "center",
   });
 
@@ -218,16 +113,29 @@ function drawCoverPage(doc, reportState, growthJourneyDataUrl) {
   }
 
   doc.setFont("helvetica", "normal");
+  doc.setTextColor(75, 40, 130);
+  doc.setFontSize(11.5);
+  doc.text("Customized for", width / 2, height - 76, { align: "center" });
+
+
   doc.setTextColor(25, 25, 25);
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(13);
-  doc.text(coverName, width / 2, height - 70, { align: "center" });
-  doc.text(coverPosition, width / 2, height - 58, {
+  doc.text(coverName, width / 2, height - 64, { align: "center" });
+  doc.text(coverPosition, width / 2, height - 56, {
     align: "center",
   });
-  doc.text(coverCompany, width / 2, height - 46, {
+  doc.text(coverCompany, width / 2, height - 49, {
     align: "center",
   });
-  doc.text(coverDate, width / 2, height - 36, { align: "center" });
+  doc.text(coverDate, width / 2, height - 42, { align: "center" });
+}
+
+function drawPageBackground(doc, imageDataUrl) {
+  if (!imageDataUrl) return;
+  const width = doc.internal.pageSize.getWidth();
+  const height = doc.internal.pageSize.getHeight();
+  doc.addImage(imageDataUrl, "PNG", 0, 0, width, height);
 }
 
 function drawIntroPage(doc, reportState) {
@@ -237,7 +145,7 @@ function drawIntroPage(doc, reportState) {
   const firstName = name.split(" ")[0];
   const reportDate = formatReadableDate(user.reportDate);
 
-  let y = 45;
+  let y = 45 + MIDDLE_PAGE_TOP_OFFSET;
   doc.setFont("times", "italic");
   doc.setFontSize(11);
   doc.text(reportDate, 20, y);
@@ -247,7 +155,7 @@ function drawIntroPage(doc, reportState) {
   y += 12;
   doc.setFontSize(10.5);
   const note =
-    "Congratulations on taking the first step toward unlocking your leadership potential! This Personal Development Plan (PDP) is crafted to support you on your journey to personal and business excellence. Let’s make this an extraordinary chapter in your Leadership journey.";
+    "Congratulations on taking the first step toward unlocking your leadership potential! This Personal Development Plan (PDP) is customized to support you on your journey to personal and business growth. Let’s make this an extraordinary chapter in your Leadership journey.";
   const noteLines = doc.splitTextToSize(note, width - 55);
   doc.text(noteLines, width / 2, y, { align: "center" });
   y += noteLines.length * 5 + 2;
@@ -262,7 +170,7 @@ function drawIntroPage(doc, reportState) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10.5);
   const paragraphs = [
-    "As a business leader, your growth directly shapes your business's future. In today's fast-paced world, sustainable success requires strong leadership, continuous growth and the ability to adapt with confidence.",
+    "As a professional, your growth directly shapes your business's future. In today's fast-paced world, sustainable success requires strong leadership, continuous growth and the ability to adapt with confidence.",
     "Your Personal Development Plan (PDP) is your roadmap to bridge the gap between where you are and where you aspire to be. Focused on practical, actionable strategies, it drives measurable growth for you and your business.",
     "Built on insights from your TriMetrix HD assessment and enriched by the expertise of Rajesh Tedla, a trusted expert with over 39+ years of experience helping SMBs and Entrepreneurs achieve success.",
   ];
@@ -306,14 +214,14 @@ function drawSelectionPage(doc, reportState, itemPageMap = {}) {
   const dna25Title = `Competencies (${sectionTitles.dna25 || "DNA"})`;
   const drivingForcesTitle = sectionTitles.drivingForces || "Driving Forces";
   const behavioralTitle = sectionTitles.behavioralTraits || "Behaviors";
-  let y = 58;
+  let y = 58 + MIDDLE_PAGE_TOP_OFFSET;
   const leftX = 30;
   const rightX = doc.internal.pageSize.getWidth() - 24;
 
   doc.setFont("times", "bold");
   doc.setTextColor(220, 38, 38);
   doc.setFontSize(20);
-  doc.text("Your Development Areas", doc.internal.pageSize.getWidth() / 2, 45, {
+  doc.text("Your Development Areas", doc.internal.pageSize.getWidth() / 2, 45 + MIDDLE_PAGE_TOP_OFFSET, {
     align: "center",
   });
 
@@ -390,20 +298,21 @@ function getItemTypeLabel(explanation, item) {
   return "Element";
 }
 
-function drawElementWorkbook(doc, item, explanation) {
+function drawElementWorkbook(doc, item, explanation, middlePageDataUrl) {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const left = 24;
   const right = 24;
-  const bottom = 34;
-  let y = 44;
+  const bottom = 24;
+  let y = 44 + MIDDLE_PAGE_TOP_OFFSET;
 
   const ensureSpace = (required) => {
     if (y + required <= pageHeight - bottom) {
       return;
     }
     doc.addPage();
-    y = 44;
+    drawPageBackground(doc, middlePageDataUrl);
+    y = 44 + MIDDLE_PAGE_TOP_OFFSET;
   };
 
   const drawTextBlock = (text, width, lineHeight = 5, x = left) => {
@@ -428,8 +337,9 @@ function drawElementWorkbook(doc, item, explanation) {
 
   const drawNumberedListWithBoldPrefix = (items) => {
     items.forEach((entry, idx) => {
-      const prefix = `${idx + 1}. `;
-      const contentWidth = pageWidth - left - right - 9;
+      const prefix = `${idx + 1}.`;
+      const contentX = left + 6;
+      const contentWidth = pageWidth - contentX - right;
       const colonIndex = entry.indexOf(":");
 
       if (colonIndex <= 0) {
@@ -437,36 +347,30 @@ function drawElementWorkbook(doc, item, explanation) {
         ensureSpace(lines.length * 5.2 + 2);
         doc.setFont("helvetica", "normal");
         doc.text(prefix, left, y);
-        doc.text(lines, left + 7, y);
+        doc.text(lines, contentX, y);
         y += lines.length * 5.2 + 2;
         return;
       }
 
       const boldPart = entry.slice(0, colonIndex + 1);
       const restPart = entry.slice(colonIndex + 1).trim();
+      const restLines = restPart
+        ? doc.splitTextToSize(restPart, contentWidth)
+        : [];
+      const entryHeight = 5.2 + restLines.length * 5.2 + 2;
 
-      ensureSpace(8);
+      ensureSpace(entryHeight);
       doc.setFont("helvetica", "normal");
       doc.text(prefix, left, y);
 
       doc.setFont("helvetica", "bold");
-      doc.text(boldPart, left + 7, y);
-      const boldWidth = doc.getTextWidth(boldPart);
-
-      doc.setFont("helvetica", "normal");
-      const firstLineWidth = contentWidth - boldWidth - 1.5;
-      const restLines = doc.splitTextToSize(restPart, firstLineWidth > 25 ? firstLineWidth : contentWidth);
-
-      if (restLines.length > 0) {
-        doc.text(restLines[0], left + 7 + boldWidth + 1.5, y);
-      }
+      doc.text(boldPart, contentX, y);
       y += 5.2;
 
-      if (restLines.length > 1) {
-        const remaining = restLines.slice(1);
-        ensureSpace(remaining.length * 5.2 + 2);
-        doc.text(remaining, left + 7, y);
-        y += remaining.length * 5.2;
+      doc.setFont("helvetica", "normal");
+      if (restLines.length) {
+        doc.text(restLines, contentX, y);
+        y += restLines.length * 5.2;
       }
 
       y += 2;
@@ -485,9 +389,10 @@ function drawElementWorkbook(doc, item, explanation) {
   const itemType = getItemTypeLabel(safeExplanation, item);
 
   doc.addPage();
+  drawPageBackground(doc, middlePageDataUrl);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.setTextColor(...BRAND_RED);
+  doc.setTextColor(...RED_600);
   drawTextBlock(
     `${item} ${itemType}`,
     pageWidth - left - right
@@ -532,18 +437,18 @@ function drawElementWorkbook(doc, item, explanation) {
     doc.text(labels[idx], legendX + 10, y + 5.6);
     legendX += idx === 2 ? 37 : 31;
   });
-  y += 13;
+  y += 18;
 
   safeExplanation.effortLevels.forEach((entry, idx) => {
     ensureSpace(13);
     doc.setFillColor(...colors[idx]);
-    doc.rect(left, y - 0.7, 8, 8, "F");
+    doc.rect(left, y, 8, 8, "F");
     doc.setDrawColor(190, 190, 190);
-    doc.rect(left, y - 0.7, 8, 8);
+    doc.rect(left, y, 8, 8);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.text(entry.level, left + 11, y + 4.8);
-    y += 10;
+    doc.text(entry.level, left + 11, y + 5.9);
+    y += 12;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10.8);
     drawTextBlock(entry.detail, pageWidth - left - right - 11, 5.2, left + 11);
@@ -551,13 +456,14 @@ function drawElementWorkbook(doc, item, explanation) {
   });
 
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(194, 0, 0);
+  doc.setTextColor(...RED_600);
   doc.setFontSize(14);
-  ensureSpace(14);
+  // Keep red section title from appearing at very bottom alone.
+  ensureSpace(28);
   doc.text(item, left, y);
   y += 8;
   doc.setTextColor(0, 0, 0);
-  doc.setFont("helvetica", "normal");
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   drawTextBlock(
     safeExplanation.behavioralIndicators[0] || "",
@@ -570,14 +476,19 @@ function drawElementWorkbook(doc, item, explanation) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
   ensureSpace(12);
+  y += 2;
+  doc.setTextColor(...COMPETENCY_PURPLE);
   const strategyLeadText = `Unlock your potential in this area by exploring and applying these empowering strategies, each step brings you closer to mastering this ${itemType} and achieving your goals!`;
   drawTextBlock(strategyLeadText, pageWidth - left - right, 5.3);
+  doc.setTextColor(0, 0, 0);
+  y += 2;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10.8);
   drawNumberedListWithBoldPrefix(safeExplanation.developmentStrategies);
 
   ensureSpace(20);
+  y += 4;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Commitment to Growth and Action Plan", pageWidth / 2, y, {
@@ -621,10 +532,15 @@ function drawElementWorkbook(doc, item, explanation) {
   let pageIndex = 0;
 
   while (drawnRows < rows) {
-    ensureSpace(70);
-    const rowsThisPage = pageIndex === 0 ? 10 : rows - drawnRows;
-    const top = y;
     const headerHeight = pageIndex === 0 ? 12 : 0;
+    ensureSpace(headerHeight + rowHeight + 6);
+    const top = y;
+    const availableHeight = pageHeight - bottom - top;
+    const maxRowsThisPage = Math.floor((availableHeight - headerHeight) / rowHeight);
+    const rowsThisPage = Math.min(
+      rows - drawnRows,
+      Math.max(1, maxRowsThisPage)
+    );
     const bodyHeight = rowsThisPage * rowHeight;
     const fullHeight = headerHeight + bodyHeight;
 
@@ -662,7 +578,7 @@ function drawElementWorkbook(doc, item, explanation) {
       doc.line(tableX, rowTop, tableX + tableWidth, rowTop);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
-      doc.text(`${drawnRows + i + 1}.`, tableX + 3, rowTop + 8);
+      doc.text(`${drawnRows + i + 1}.`, tableX + 3, rowTop + rowHeight / 2 + 1.3);
     }
 
     y = top + fullHeight + 6;
@@ -670,28 +586,33 @@ function drawElementWorkbook(doc, item, explanation) {
     pageIndex += 1;
   }
 
-  ensureSpace(45);
+  ensureSpace(50);
+  y += 4;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12.5);
-  doc.text("Evaluation/Measurables/ Reflection", left, y);
+  doc.text("Evaluation/Measurables/ Reflection", 18, y);
   y += 10;
   drawTextBlock(
     "Note: Make sure to finish all 10 exercises before answering the below questions, so the learning process stays clear and effective.",
-    pageWidth - left - right
+    pageWidth - 36,
+    5,
+    18
   );
 
   const questions = safeExplanation.reflectionQuestions;
   questions.forEach((question, index) => {
     const boxHeight = index === questions.length - 1 ? 28 : 14;
-    ensureSpace(boxHeight + 12);
+    ensureSpace(boxHeight + 14);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
-    drawTextBlock(`${index + 1}. ${question}`, pageWidth - left - right, 5.2);
-    ensureSpace(boxHeight + 4);
+    const qLines = doc.splitTextToSize(`${index + 1}. ${question}`, pageWidth - 36);
+    ensureSpace(qLines.length * 5.2 + boxHeight + 10);
+    doc.text(qLines, 18, y);
+    y += qLines.length * 5.2;
+    ensureSpace(boxHeight + 10);
     doc.setDrawColor(120, 120, 120);
-    y += 1;
-    doc.rect(left + 5, y, pageWidth - left - right - 7, boxHeight);
-    y += boxHeight + 5;
+    doc.rect(18, y, pageWidth - 36, boxHeight);
+    y += boxHeight + 10;
   });
 
   ensureSpace(30);
@@ -714,7 +635,7 @@ function drawElementWorkbook(doc, item, explanation) {
   doc.text("Date", pageWidth - right - 25, y);
 }
 
-function drawItemExplanationsPages(doc, reportState) {
+function drawItemExplanationsPages(doc, reportState, middlePageDataUrl) {
   const all = [
     ...reportState.dna25,
     ...reportState.drivingForces,
@@ -740,32 +661,35 @@ function drawItemExplanationsPages(doc, reportState) {
     drawElementWorkbook(
       doc,
       item,
-      effectiveExplanation
+      effectiveExplanation,
+      middlePageDataUrl
     );
   });
   return pageMap;
 }
 
+function drawThankYouPage(doc) {
+  const width = doc.internal.pageSize.getWidth();
+  const height = doc.internal.pageSize.getHeight();
+
+  doc.setTextColor(...RED_600);
+  doc.setFont("times", "bold");
+  doc.setFontSize(30);
+  doc.text("Thank You", width / 2, height / 2 - 4, { align: "center" });
+  doc.setFont("times", "italic");
+  doc.setFontSize(13);
+  doc.text("For your commitment to growth.", width / 2, height / 2 + 8, {
+    align: "center",
+  });
+  doc.setTextColor(0, 0, 0);
+}
+
 export async function generateReportPdf(reportState) {
   const doc = new jsPDF("p", "mm", "a4");
-  let logoDataUrl = null;
   let growthJourneyDataUrl = null;
-  const logoCandidates = [
-    "/vrt-logo.png",
-    "/vrt/logo.png",
-    "/vrt/vrt-logo.png",
-    "/vrt.png",
-  ];
-
-  for (const logoPath of logoCandidates) {
-    try {
-      logoDataUrl = await toDataUrl(logoPath);
-      break;
-    } catch {
-      logoDataUrl = null;
-    }
-  }
-
+  let firstPageDataUrl = null;
+  let middlePageDataUrl = null;
+  let lastPageDataUrl = null;
   const growthJourneyCandidates = [
     "/image.png",
   ];
@@ -778,19 +702,45 @@ export async function generateReportPdf(reportState) {
     }
   }
 
+  try {
+    firstPageDataUrl = await toDataUrl("/pdf-images-section/first.png");
+  } catch {
+    firstPageDataUrl = null;
+  }
+  try {
+    middlePageDataUrl = await toDataUrl("/pdf-images-section/middle.png");
+  } catch {
+    middlePageDataUrl = null;
+  }
+  try {
+    lastPageDataUrl = await toDataUrl("/pdf-images-section/last.png");
+  } catch {
+    lastPageDataUrl = null;
+  }
+
+  drawPageBackground(doc, firstPageDataUrl);
   drawCoverPage(doc, reportState, growthJourneyDataUrl);
   doc.addPage();
+  drawPageBackground(doc, middlePageDataUrl);
   drawIntroPage(doc, reportState);
   doc.addPage();
+  drawPageBackground(doc, middlePageDataUrl);
   const selectionPageNumber = doc.getNumberOfPages();
-  const itemPageMap = drawItemExplanationsPages(doc, reportState);
+  const itemPageMap = drawItemExplanationsPages(doc, reportState, middlePageDataUrl);
   doc.setPage(selectionPageNumber);
   drawSelectionPage(doc, reportState, itemPageMap);
 
+  doc.addPage();
+  drawPageBackground(doc, lastPageDataUrl);
+  drawThankYouPage(doc);
+
   const totalPages = doc.getNumberOfPages();
   for (let i = 1; i <= totalPages; i += 1) {
+    if (i === 1 || i === totalPages) {
+      continue;
+    }
     doc.setPage(i);
-    drawHeaderAndFooter(doc, i, totalPages, logoDataUrl);
+    drawMiddlePageFooter(doc, i, totalPages);
   }
 
   const fileName = `${(reportState.user.name || "respondent").replaceAll(

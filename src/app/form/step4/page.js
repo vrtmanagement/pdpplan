@@ -4,15 +4,22 @@ import SelectionStepPage from "@/components/SelectionStepPage";
 import { useFormState } from "@/components/form-context";
 import { generateReportPdf } from "@/lib/pdf";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Step4Page() {
   const router = useRouter();
   const { formState, resetForm } = useFormState();
+  const [downloading, setDownloading] = useState(false);
 
   const handleDownloadReport = async () => {
-    await generateReportPdf(formState);
-    resetForm();
-    router.push("/");
+    try {
+      setDownloading(true);
+      await generateReportPdf(formState);
+      await resetForm();
+      router.push("/");
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -37,10 +44,22 @@ export default function Step4Page() {
           </p>
           <button
             type="button"
+            disabled={downloading}
             onClick={handleDownloadReport}
-            className="mt-3 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+            className={`mt-3 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white ${
+              downloading
+                ? "bg-zinc-300"
+                : "bg-indigo-600 hover:bg-indigo-500"
+            }`}
           >
-            Download Report
+            {downloading ? (
+              <>
+                <span className="btn-spinner" aria-hidden="true" />
+                Generating...
+              </>
+            ) : (
+              "Download Report"
+            )}
           </button>
         </div>
       }
